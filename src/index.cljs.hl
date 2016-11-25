@@ -1,0 +1,10 @@
+(page "index.html"
+  (:require [app.rpc :as rpc]))
+
+(html
+  (head
+    (title "Tankputer"))
+  (body
+    (h1 "Tankputer")))
+
+;; vim: set expandtab ts=2 sw=2 filetype=clojure :
