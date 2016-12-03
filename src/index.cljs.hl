@@ -1,10 +1,36 @@
 (page "index.html"
-  (:require [app.rpc :as rpc]))
+  (:require [app.rpc :as rpc]
+            [Blockly]))
+
+(def toolbox
+  "<xml>
+    <block type=\"controls_if\"></block>
+    <block type=\"logic_compare\"></block>
+    <block type=\"controls_repeat_ext\"></block>
+    <block type=\"math_number\"></block>
+    <block type=\"math_arithmetic\"></block>
+    <block type=\"text\"></block>
+    <block type=\"text_print\"></block>
+  </xml>")
+
+(defelem blockly-workspace
+         [{:keys [options] :as attr} kids]
+         (let [elem (div (dissoc attr :options) kids)]
+           (with-init!
+             (set! (.-workspace elem)
+                   (.inject js/Blockly elem (clj->js options))))
+           elem))
+
 
 (html
   (head
+    (link :rel "stylesheet" :type "text/css" :href "css/semantic.min.css")
+    (script :src "blocks_compressed.js")
+    (script :src "en.js")
     (title "Tankputer"))
   (body
-    (h1 "Tankputer")))
+    (h1 "Tankputer")
+    (blockly-workspace :css {:height "480px" :width "600px"}
+                       :options {:media "media/" :toolbox toolbox})))
 
 ;; vim: set expandtab ts=2 sw=2 filetype=clojure :

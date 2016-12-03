@@ -1,10 +1,11 @@
 (set-env!
   :dependencies '[[adzerk/boot-cljs          "1.7.228-2"]
                   [adzerk/boot-cljs-repl     "0.3.3"]
+                  [cljsjs/jquery             "2.2.2-0"]
                   [com.cemerick/piggieback   "0.2.1"  :scope "test"]
                   [compojure                 "1.5.1"]
                   [hoplon/castra             "3.0.0-alpha5"]
-                  [hoplon                    "6.0.0-alpha17"]
+                  [hoplon                    "6.0.0-alpha17.amatus0"]
                   [org.clojure/clojure       "1.7.0"]
                   [org.clojure/clojurescript "1.7.170"]
                   [org.clojure/tools.nrepl   "0.2.12" :scope "test"]
