@@ -1,7 +1,7 @@
 (set-env!
   :dependencies '[[adzerk/boot-cljs          "1.7.228-2"]
                   [adzerk/boot-cljs-repl     "0.3.3"]
-                  [cljsjs/jquery             "2.2.2-0"]
+                  [cljsjs/semantic-ui        "2.2.4-0"]
                   [com.cemerick/piggieback   "0.2.1"  :scope "test"]
                   [compojure                 "1.5.1"]
                   [hoplon/castra             "3.0.0-alpha5"]

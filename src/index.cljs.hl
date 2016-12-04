@@ -1,5 +1,6 @@
 (page "index.html"
   (:require [app.rpc :as rpc]
+            [cljsjs.semantic-ui :as ui]
             [Blockly]))
 
 (def toolbox
@@ -24,7 +25,8 @@
 
 (html
   (head
-    (link :rel "stylesheet" :type "text/css" :href "css/semantic.min.css")
+    (link :rel "stylesheet" :type "text/css"
+          :href "cljsjs/semantic-ui/common/semantic.min.css")
     (script :src "blocks_compressed.js")
     (script :src "en.js")
     (title "Tankputer"))
