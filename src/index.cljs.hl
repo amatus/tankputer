@@ -1,7 +1,12 @@
 (page "index.html"
   (:require [app.rpc :as rpc]
+            [cljs.pprint :refer [pprint]]
             [cljsjs.semantic-ui :as ui]
             [Blockly]))
+
+(rpc/init)
+(defc= state rpc/state)
+(defc= error rpc/error)
 
 (def toolbox
   "<xml>
@@ -32,7 +37,6 @@
     (title "Tankputer"))
   (body
     (h1 "Tankputer")
-    (blockly-workspace :css {:height "480px" :width "600px"}
-                       :options {:media "media/" :toolbox toolbox})))
+    (textarea :text (cell= (with-out-str (pprint state))))))
 
 ;; vim: set expandtab ts=2 sw=2 filetype=clojure :

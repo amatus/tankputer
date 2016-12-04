@@ -12,7 +12,7 @@
 
 (def app
   (-> app-routes
-      (castra/wrap-castra 'app.api)
+      (castra/wrap-castra {:state-fn (fn [] "ohi")} 'app.api)
       (d/wrap-defaults d/api-defaults)))
 
 (db/init)
