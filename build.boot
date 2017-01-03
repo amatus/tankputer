@@ -42,7 +42,7 @@
   []
   (comp
     (hoplon)
-    (cljs)
+    (cljs :optimizations :advanced)
     (prerender)
     (aot :all true)
     (uber)

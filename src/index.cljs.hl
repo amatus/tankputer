@@ -2,7 +2,16 @@
   (:require [app.rpc :as rpc]
             [cljs.pprint :refer [pprint]]
             [cljsjs.semantic-ui :as ui]
-            [Blockly]))
+            [Blockly]
+            [Blockly.Blocks.loops]
+            [Blockly.Blocks.lists]
+            [Blockly.Blocks.texts]
+            [Blockly.Blocks.procedures]
+            [Blockly.Blocks.math]
+            [Blockly.Blocks.variables]
+            [Blockly.Blocks.colour]
+            [Blockly.Blocks.logic]
+            [Blockly.Msg.en]))
 
 (rpc/init)
 (defc= state rpc/state)
@@ -32,11 +41,11 @@
   (head
     (link :rel "stylesheet" :type "text/css"
           :href "cljsjs/semantic-ui/common/semantic.min.css")
-    (script :src "blocks_compressed.js")
-    (script :src "en.js")
     (title "Tankputer"))
   (body
     (h1 "Tankputer")
-    (textarea :text (cell= (with-out-str (pprint state))))))
+    (textarea :text (cell= (with-out-str (pprint state))))
+    (blockly-workspace :css {:height "480px" :width "600px"}
+                       :options {:media "media/" :toolbox toolbox})))
 
 ;; vim: set expandtab ts=2 sw=2 filetype=clojure :
