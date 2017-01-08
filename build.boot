@@ -6,6 +6,7 @@
                   [compojure                 "1.5.1"]
                   [hoplon/castra             "3.0.0-alpha5"]
                   [hoplon                    "6.0.0-alpha17.amatus0"]
+                  [net.sf.expectit/expectit-core "0.8.2"]
                   [org.clojure/clojure       "1.7.0"]
                   [org.clojure/clojurescript "1.7.170"]
                   [org.clojure/tools.nrepl   "0.2.12" :scope "test"]
@@ -36,6 +37,11 @@
       :handler 'app.handler/app
       :reload true
       :port 8000)))
+
+(deftask dev-repl
+  "Run clojure repl."
+  []
+  (repl))
 
 (deftask prod
   "Build tankputer for production deployment."
