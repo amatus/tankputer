@@ -1,12 +1,82 @@
 (ns app.portmaster
-  (:import (java.io File)
-           (java.util.concurrent TimeUnit)
-           (net.sf.expectit ExpectBuilder)))
+  (:import java.io.File
+           (java.util.concurrent Executors TimeUnit)
+           net.sf.expectit.ExpectBuilder
+           net.sf.expectit.matcher.Matchers))
+
+(def prompt (Matchers/contains "pm>"))
+(def the-unexpected (Matchers/anyString)) ; I couldn't help myself
 
 (def pm (agent nil))
 
+(defn parse-status
+  [s]
+  (map rest (re-seq #" ([0-9]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)" s)))
+
+(defn parse-current
+  [s]
+  (map rest (re-seq #"#([0-9]+).* ([0-9.]+)A.* ([0-9.]+)A" s)))
+
+(defn login-maybe
+  [expect username password]
+  ; flush input
+  (try
+    (.. expect
+      (withTimeout 1 TimeUnit/MILLISECONDS)
+      (expect the-unexpected))
+    (catch Exception e))
+  (let [matchers (into-array [(Matchers/contains "Username:") prompt])
+        results (.getResults (.. expect
+                               (withTimeout 100 TimeUnit/MILLISECONDS)
+                               (sendLine)
+                               (expect (Matchers/anyOf matchers))))]
+    (when (.isSuccessful (first results))
+      (.. expect
+        (sendLine username)
+        (expect (Matchers/contains "Password:")))
+      (.. expect
+        (sendLine password)
+        (expect prompt)))))
+
+(defn do-command
+  ([expect command]
+   (.. expect (sendLine command) (expect prompt)))
+  ([command]
+   (send pm (fn [{:keys [expect] :as state}]
+              (do-command expect command)
+              state))))
+
+(defn poll
+  [{:keys [expect] :as state} username password]
+  (try
+    (login-maybe expect username password)
+    (let [result (do-command expect "status all")
+          status (parse-status (.getBefore result))
+          state (if (nil? status)
+                  state
+                  (assoc state :status status))
+          result (do-command expect "current")
+          current (parse-current (.getBefore result))
+          state (if (nil? current)
+                  state
+                  (assoc state :current current))]
+      state)
+    (catch Exception e
+      (println "poll failed")
+      (println (.getMessage e))
+      state)))
+
+(defn turn-on
+  [port]
+  ; TODO: updated the status
+  (do-command (str "on " port)))
+
+(defn turn-off
+  [port]
+  (do-command (str "off " port)))
+
 (defn init
-  [port-name]
+  [port-name username password]
   (let [socat (.. (new ProcessBuilder
                        (into-array ["socat"
                                     "-v"
@@ -17,7 +87,9 @@
         expect (.. (new ExpectBuilder)
                  (withInputs (into-array [(.getInputStream socat)]))
                  (withOutput (.getOutputStream socat))
-                 (withTimeout 1 TimeUnit/SECONDS)
+                 (withTimeout 1000 TimeUnit/MILLISECONDS)
                  (withExceptionOnFailure)
-                 (build))]
-    (send pm assoc :socat socat :expect expect)))
+                 (build))
+        executor (Executors/newSingleThreadScheduledExecutor)]
+    (send pm assoc :socat socat :expect expect)
+    (.scheduleAtFixedRate executor #(send pm poll username password) 2 10 TimeUnit/SECONDS)))
