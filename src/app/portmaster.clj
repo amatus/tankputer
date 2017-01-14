@@ -25,7 +25,9 @@
       (withTimeout 1 TimeUnit/MILLISECONDS)
       (expect the-unexpected))
     (catch Exception e))
-  (let [matchers (into-array [(Matchers/contains "Username:") prompt])
+  (let [matchers (into-array [(Matchers/contains "Username:")
+                              (Matchers/contains "Enter choice (1 or 2):")
+                              prompt])
         results (.getResults (.. expect
                                (withTimeout 100 TimeUnit/MILLISECONDS)
                                (sendLine)
@@ -36,7 +38,13 @@
         (expect (Matchers/contains "Password:")))
       (.. expect
         (sendLine password)
-        (expect prompt)))))
+        (expect prompt)))
+    (when (.isSuccessful (second results))
+      (.. expect
+        (withTimeout 5000 TimeUnit/MILLISECONDS)
+        (sendLine "2")
+        (expect (Matchers/contains "Username:")))
+      (login-maybe expect username password))))
 
 (defn do-command
   ([expect command]
