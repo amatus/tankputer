@@ -85,12 +85,12 @@
 
 (defn init
   [port-name username password]
-  (let [socat (.. (new ProcessBuilder
-                       (into-array ["socat"
-                                    "-v"
-                                    (str "OPEN:" port-name ",b9600,raw")
-                                    "-"]))
-                (redirectError (new File "/tmp/portmaster.log"))
+  (let [socat (.. (ProcessBuilder.
+                    (into-array ["socat"
+                                 "-v"
+                                 (str "OPEN:" port-name ",b9600,raw")
+                                 "-"]))
+                (redirectError (File. "/tmp/portmaster.log"))
                 (start))
         expect (.. (new ExpectBuilder)
                  (withInputs (into-array [(.getInputStream socat)]))
@@ -100,4 +100,8 @@
                  (build))
         executor (Executors/newSingleThreadScheduledExecutor)]
     (send pm assoc :socat socat :expect expect)
-    (.scheduleAtFixedRate executor #(send pm poll username password) 2 10 TimeUnit/SECONDS)))
+    (.scheduleAtFixedRate executor
+                          #(send pm poll username password)
+                          2
+                          10
+                          TimeUnit/SECONDS)))
