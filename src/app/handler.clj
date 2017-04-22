@@ -12,9 +12,13 @@
   (c/GET "/" req (response/content-type (response/resource-response "index.html") "text/html"))
   (route/resources "/" {:root ""}))
 
+(defn state-fn []
+  {:temps @temp/temp
+   :pm (select-keys @pm/pm [:status :current])})
+
 (def app
   (-> app-routes
-      (castra/wrap-castra {:state-fn (fn [] "ohi")} 'app.api)
+      (castra/wrap-castra {:state-fn state-fn} 'app.api)
       (d/wrap-defaults d/api-defaults)))
 
 (db/init)
