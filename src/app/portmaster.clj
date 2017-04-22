@@ -76,7 +76,7 @@
 
 (defn turn-on
   [port]
-  ; TODO: updated the status
+  ; TODO: update the status
   (do-command (str "on " port)))
 
 (defn turn-off
