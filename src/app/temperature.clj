@@ -1,5 +1,6 @@
 (ns app.temperature
-  (:import (java.nio.file Files Paths)
+  (:import (java.nio.charset StandardCharsets)
+           (java.nio.file Files Paths)
            (java.util.concurrent Executors TimeUnit)))
 
 (def temp (agent nil))
