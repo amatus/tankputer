@@ -83,6 +83,10 @@
   [port]
   (do-command (str "off " port)))
 
+(defn set-name
+  [port name]
+  (do-command (str "name " port " " name)))
+
 (defn init
   [port-name username password]
   (let [socat (.. (ProcessBuilder.

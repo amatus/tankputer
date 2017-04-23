@@ -2,6 +2,7 @@
   (:require [app.rpc :as rpc]
             [cljs.pprint :refer [pprint]]
             [cljsjs.semantic-ui :as ui]
+            [clojure.string :refer [trim]]
             [Blockly]
             [Blockly.Blocks.loops]
             [Blockly.Blocks.lists]
@@ -43,9 +44,34 @@
           :href "cljsjs/semantic-ui/common/semantic.min.css")
     (title "Tankputer"))
   (body
-    (h1 "Tankputer")
-    (textarea :text (cell= (with-out-str (pprint state))))
-    (blockly-workspace :css {:height "480px" :width "600px"}
-                       :options {:media "media/" :toolbox toolbox})))
+    (h1 "Status")
+    (let [current (cell= (reduce + (map #(float (second %))
+                                        (:current (:pm state)))))]
+      (h2 (text "Power (~{current} A)")))
+    (table
+      (loop-tpl
+        :bindings [[port name state] (cell= (:status (:pm state)))]
+        (let [toggle (cell false)
+              name (cell= (trim name))
+              name-input (input :toggle toggle :value name)]
+          (tr
+            (td port)
+            (td :click #(reset! toggle true)
+                (span :toggle (cell= (not toggle))
+                      :text (cell= (if (empty? name) "(unnamed)" name)))
+                (form :submit #(do (rpc/set-name @port (.-value name-input))
+                                 (reset! toggle false))
+                      name-input
+                      (input :toggle toggle :type "submit")))
+            (td state)
+            (td (button :click #(rpc/turn-on @port) "On")
+                (button :click #(rpc/turn-off @port) "Off"))))))
+    (h2 "Temperature")
+    (ul
+      (loop-tpl :bindings [[id temp] (cell= (:state (:temps state)))]
+                (let [millicelsius (cell= (int temp))
+                      fahrenheit (cell= (+ 32 (* 0.0018 millicelsius)))]
+                  (li (text "Sensor ~{id}: ~{fahrenheit} \u00b0F")))))
+    (textarea :text (cell= (with-out-str (pprint state))))))
 
 ;; vim: set expandtab ts=2 sw=2 filetype=clojure :

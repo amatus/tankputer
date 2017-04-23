@@ -12,6 +12,15 @@
 (def get-state
   (mkremote 'app.api/get-state state error loading))
 
+(def turn-on
+  (mkremote 'app.api/turn-on state error loading))
+
+(def turn-off
+  (mkremote 'app.api/turn-off state error loading))
+
+(def set-name
+  (mkremote 'app.api/set-name state error loading))
+
 (defn init []
   (get-state)
   (js/setInterval get-state 1000))
