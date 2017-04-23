@@ -29,7 +29,7 @@
   []
   (comp
     (watch)
-    (speak)
+    ;(speak)
     (hoplon)
     (cljs-repl)
     (cljs)
